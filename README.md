@@ -37,6 +37,12 @@ Set a variable:
 <!-- :showTitle = true -->
 ```
 
+To get an array item by key, such as `$post['title']`:
+
+```
+<!-- :post.title -->
+```
+
 If statement:
 
 ```
@@ -62,7 +68,16 @@ Foreach loop:
     <li><!-- :item --></li>
 <!-- @/each -->
 </ul>
+
+<!-- @each :id, :post in :posts -->
+<article>
+<h1><!-- :post.title --></h1>
+<div><!-- :post.content --></div>
+</article>
+<!-- @/each -->
+
 ```
+__NOTE:__ Can be `@foreach` also.
 
 While loop:
 

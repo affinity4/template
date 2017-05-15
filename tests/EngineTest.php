@@ -144,6 +144,32 @@ EXPECTED;
         $this->assertEquals($expected, $output);
     }
     
+    public function testRenderForeachLoopWithKeysAndValues()
+    {
+        $expected = <<<EXPECTED
+<article>
+<h1>Post title goes here...</h1>
+<div>Content goes here...</div>
+</article>
+
+EXPECTED;
+        
+        ob_start();
+        $this->template->render(
+            'tests/views/foreach-loop-with-keys-and-values.php',
+            [
+                'posts' => [
+                    [
+                        'title' => 'Post title goes here...',
+                        'content' => 'Content goes here...'
+                    ]
+                ]
+            ]
+        );
+        $output = ob_get_clean();
+        $this->assertEquals($expected, $output);
+    }
+    
     public function testRenderForLoop()
     {
         $expected = <<<EXPECTED

@@ -51,6 +51,12 @@ class Engine
          * PHP: <?= $some_var_02 ?>
          */
         $this->addToken('/<!-- :([\w\d]+) -->/', '<?= $$1 ?>');
+    
+        /*
+         * Syntax: <!-- :post.title -->
+         * PHP: <?= $post['title'] ?>
+         */
+        $this->addToken('/<!-- :([\w\d]+)\.(.*) -->/', '<?= $$1[\'$2\'] ?>');
         
         /*
          * Syntax: <!-- @foreach :item in :items  --> or <!-- @each :item in :items -->
@@ -58,6 +64,13 @@ class Engine
          */
         $this->addToken('/<!-- @foreach :([\w\d]+) in :([\w\d]+) -->/', '<?php foreach ($$2 as $$1) : ?>');
         $this->addToken('/<!-- @each :([\w\d]+) in :([\w\d]+) -->/', '<?php foreach ($$2 as $$1) : ?>');
+    
+        /*
+         * Syntax: <!-- @foreach :key, :value in :items  --> or <!-- @each :key, :value in :items -->
+         * PHP: <?php foreach ($items as $key => $value) : ?>
+         */
+        $this->addToken('/<!-- @foreach :([\w\d]+), :([\w\d]+) in :([\w\d]+) -->/', '<?php foreach ($$3 as $$1 => $$2) : ?>');
+        $this->addToken('/<!-- @each :([\w\d]+), :([\w\d]+) in :([\w\d]+) -->/', '<?php foreach ($$3 as $$1 => $$2) : ?>');
     
         /*
          * Syntax: <!-- @if :something is true -->
