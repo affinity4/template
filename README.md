@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/affinity4/template.svg?branch=master)](https://travis-ci.org/affinity4/template)
 
-Simple template engine with optional syntax which is easy to learn. Can use plain PHP also.
+Full-featured template engine with optional syntax which is easy to learn. Can use plain PHP also.
 
 ## Features
  - HTML Comment syntax
@@ -96,6 +96,76 @@ For loop:
 <!-- @for :i = 1; :i <= 3; :i++ -->
     Number: <!-- :i --><br />
 <!-- @/for -->
+```
+
+## Layouts and Blocks
+
+You can extend master layouts the same way as you would in any other template engine such as Twig or Blade.
+
+Create a master layout with sections to be overridden in each view file:
+
+File: `views/layout/master.php`
+
+```
+<!DOCKTYPE html>
+<html>
+<head>
+    <title><!-- @block title -->This can be overridden<!-- @/block -->: Site description</title>
+    
+    <link href="/assets/css/main.css" rel="stylesheet">
+    <!-- @block css -->
+    <!-- Each view can add custom CSS here -->
+    <!-- @/block -->
+    
+    <script src="/assets/js/jquery.js">
+    <!-- @block js-head -->
+    <!-- Each view can add custom JS here -->
+    <!-- @/block -->
+</head>
+<body>
+    <main>    
+        <h1><!-- @block page-title -->Default Page<!-- @/block --></h1>
+        
+        <!-- @block content -->
+        <p>Page content goes here...</p>
+        <!-- @/block -->
+    </main>
+
+    <!-- @block js-footer -->
+    <!-- Each view can add custom JS here -->
+    <!-- @/block -->
+</body>
+</html>
+```
+
+Then in you view:
+
+File: `views/home.php`
+
+```
+<!-- @extends layout/master.php -->
+
+<!-- @block title --><!-- :page_title --><!-- @/block -->
+
+<!-- @block css -->
+<link href="/assets/css/home.css" rel="stylesheet">
+<!-- @/block -->
+
+<!-- @block page-title --><!-- :page_title --><!-- @/block -->
+
+<!-- @block content -->
+<p>This is the homepage</p>
+<!-- @/block -->
+```
+
+Then simply render the view:
+
+File: `index.php`
+
+```
+$template = new Affinity4\Template\Engine;
+
+$tempalte->render('views/home.php', ['page_title' => 'Home']);
 ```
 
 ## Usage
