@@ -205,4 +205,52 @@ EXPECTED;
         $output = ob_get_clean();
         $this->assertEquals($expected, $output);
     }
+    
+    public function testSetViewPathAndGetViewPath()
+    {
+        ob_start();
+        $this->template->render('tests/views/extends.php');
+        $output = ob_get_clean();
+    
+        $this->assertEquals('tests/views/extends.php', $this->template->getViewPath());
+    }
+    
+    public function testSetLayoutAndGetLayout()
+    {
+        ob_start();
+        $this->template->render('tests/views/extends.php');
+        $output = ob_get_clean();
+        
+        $this->assertEquals('tests/views/layout/master.php', $this->template->getLayout());
+    }
+    
+    public function testAddBlocks()
+    {
+        $expected = [
+            'slave'       => [
+                'content' => sprintf('Content%1$sShould override Master layout content%1$s', PHP_EOL)
+            ],
+            'master' => [
+                'content' => 'Master layout',
+                'sidebar' => 'Sidebar'
+            ]
+        ];
+        
+        ob_start();
+        $this->template->render('tests/views/extends.php');
+        $output = ob_get_clean();
+    
+        $this->assertEquals($expected, $this->template->getBlocks());
+    }
+    
+    public function testCompileBlocks()
+    {
+        $expected = sprintf('Content%1$sShould override Master layout content%1$s%1$sNot in block%1$s%1$sSidebar', PHP_EOL);
+    
+        ob_start();
+        $this->template->render('tests/views/extends.php');
+        $output = ob_get_clean();
+    
+        $this->assertEquals($expected, $output);
+    }
 }
