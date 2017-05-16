@@ -110,7 +110,7 @@ class Engine
          * Syntax: <!-- @if :something is true -->
          * To: <!-- @if :something === true -->
          */
-        $this->addToken('/<!-- ?@if ((.*) is (.*)) ?-->/', function ($text) {
+        $this->addToken('/<!-- ?@if ((.*) is (.*)) ?-->/', function($text) {
             return '<!-- @if ' . str_replace(' is ', ' === ', $text[1]) . ' -->';
         });
         
@@ -118,7 +118,7 @@ class Engine
          * Syntax: <!-- @if :something === true and :somethingElse !== true  -->
          * To: <!-- @if :something === true && :somethingElse !== true -->
          */
-        $this->addToken('/<!-- ?@if ((.*) and (.*)) ?-->/', function ($text) {
+        $this->addToken('/<!-- ?@if ((.*) and (.*)) ?-->/', function($text) {
             return '<!-- @if ' . str_replace(' and ', ' && ', $text[1]) . ' -->';
         });
     
@@ -126,7 +126,7 @@ class Engine
          * Syntax: <!-- @if :something === true or :somethingElse === true  -->
          * To: <!-- @if :something === true || :somethingElse === true -->
          */
-        $this->addToken('/<!-- ?@if ((.*) or (.*)) ?-->/', function ($text) {
+        $this->addToken('/<!-- ?@if ((.*) or (.*)) ?-->/', function($text) {
             return '<!-- @if ' . str_replace(' or ', ' || ', $text[1]) . ' -->';
         });
     
@@ -134,7 +134,7 @@ class Engine
          * Syntax: <!-- @if :showList is true and :something is false or :somethingElse -->
          * PHP: <?php if ($showList === true && $something === false || $somethingElse) : ?>
          */
-        $this->addToken('/<!-- ?@if ((.*):([\w\d]+)(.*)) ?-->/', function ($var) {
+        $this->addToken('/<!-- ?@if ((.*):([\w\d]+)(.*)) ?-->/', function($var) {
             return '<?php if (' . preg_replace('/:([\w\d])/', '$$1', $var[1]) . ') : ?>';
         });
     
@@ -142,7 +142,7 @@ class Engine
          * Syntax: <!-- @elseif :something is true -->
          * To: <!-- @elseif :something === true -->
          */
-        $this->addToken('/<!-- ?@elseif ((.*) is (.*)) ?-->/', function ($text) {
+        $this->addToken('/<!-- ?@elseif ((.*) is (.*)) ?-->/', function($text) {
             return '<!-- @elseif ' . str_replace(' is ', ' === ', $text[1]) . ' -->';
         });
     
@@ -150,7 +150,7 @@ class Engine
          * Syntax: <!-- @elseif :something === true and :somethingElse !== true  -->
          * To: <!-- @elseif :something === true && :somethingElse !== true -->
          */
-        $this->addToken('/<!-- ?@elseif ((.*) and (.*)) ?-->/', function ($text) {
+        $this->addToken('/<!-- ?@elseif ((.*) and (.*)) ?-->/', function($text) {
             return '<!-- @elseif ' . str_replace(' and ', ' && ', $text[1]) . ' -->';
         });
     
@@ -158,7 +158,7 @@ class Engine
          * Syntax: <!-- @elseif :something === true or :somethingElse === true  -->
          * To: <!-- @elseif :something === true || :somethingElse === true -->
          */
-        $this->addToken('/<!-- ?@elseif ((.*) or (.*)) ?-->/', function ($text) {
+        $this->addToken('/<!-- ?@elseif ((.*) or (.*)) ?-->/', function($text) {
             return '<!-- @elseif ' . str_replace(' or ', ' || ', $text[1]) . ' -->';
         });
     
@@ -166,7 +166,7 @@ class Engine
          * Syntax: <!-- @elseif :showList is true and :something is false or :somethingElse -->
          * PHP: <?php elseif ($showList === true && $something === false || $somethingElse) : ?>
          */
-        $this->addToken('/<!-- ?@elseif ((.*):([\w\d]+)(.*)) ?-->/', function ($var) {
+        $this->addToken('/<!-- ?@elseif ((.*):([\w\d]+)(.*)) ?-->/', function($var) {
             return '<?php elseif (' . preg_replace('/:([\w\d])/', '$$1', $var[1]) . ') : ?>';
         });
     
@@ -187,7 +187,7 @@ class Engine
          * Syntax: <!-- @while :i <= count(:items) -->
          * PHP: <?php while ($i <= count($items)) : ?>
          */
-        $this->addToken('/<!-- ?@while (.*) ?-->/', function ($statement) {
+        $this->addToken('/<!-- ?@while (.*) ?-->/', function($statement) {
             $stream = preg_replace('/:([\w\d]+)/', '$$1', $statement[1]);
     
             return '<?php while (' . $stream . ') : ?>';
@@ -197,7 +197,7 @@ class Engine
          * Syntax: <!-- @for :i = 1; :i <= 10; :i++ -->
          * PHP: <?php for ($i = 1; $i <= 10; :i++) : ?>
          */
-        $this->addToken('/<!-- ?@for (.*) ?-->/', function ($statement) {
+        $this->addToken('/<!-- ?@for (.*) ?-->/', function($statement) {
             return '<?php for (' . preg_replace('/:([\w\d]+)/', '$$1', $statement[1]) . ') : ?>';
         });
     
@@ -394,7 +394,7 @@ class Engine
     public function layout($file)
     {
         $this->setStream(file_get_contents($file));
-        $this->setBlocks($file, $layout = false); // Add child blocks
+        $this->setBlocks($file, false); // Add child blocks
     
         if (preg_match('/<!-- ?@extends (.*) ?-->/', $this->getStream(), $matches)) {
             $this->setLayout($this->getViewDir() . '/' . trim($matches[1]));
