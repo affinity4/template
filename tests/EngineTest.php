@@ -25,9 +25,9 @@ class EngineTest extends TestCase
         $this->template = new Engine;
     }
     
-    public function testAddTokenAndGetTokens()
+    public function testAddRuleAndGetRules()
     {
-        $expected = $this->template->getTokens();
+        $expected = $this->template->getRules();
         $expected[] = [
             'pattern' => '/<!-- {{ var }} -->/',
             'replacement' => '<?= $var ?>',
@@ -35,9 +35,9 @@ class EngineTest extends TestCase
         ];
         
         $n = count($expected) - 1;
-        $this->template->addToken($expected[$n]['pattern'], $expected[$n]['replacement'], $expected[$n]['callback']);
+        $this->template->addRule($expected[$n]['pattern'], $expected[$n]['replacement'], $expected[$n]['callback']);
         
-        $this->assertArraySubset($expected, $this->template->getTokens());
+        $this->assertArraySubset($expected, $this->template->getRules());
     }
     
     public function testSetStreamAndGetStream()
