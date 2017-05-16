@@ -13,8 +13,8 @@ namespace Affinity4\Template;
 /**
  * Syntax Class
  *
- * @author Luke Watts <luke@affinity4.ie>
- * @since  1.1.0
+ * @author  Luke Watts <luke@affinity4.ie>
+ * @since   1.1.0
  *
  * @package Affinity4\Template
  */

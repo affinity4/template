@@ -22,7 +22,7 @@ or
 ```
 {
     "require": {
-        "affinity4/template": "^1.0"
+        "affinity4/template": "^1.1"
     }
 }
 ```
@@ -189,7 +189,7 @@ use Affinity4\Template\Engine;
 
 $template = new Engine;
 
-$template->addToken('/\{\{ ([\w\d+]) \}\}/', '<?= $$1 ?>');
+$template->addRule('/\{\{ ([\w\d+]) \}\}/', '<?= $$1 ?>');
 
 $template->render('views/home.php', ['title' => 'Home Page']);
 ```
@@ -201,7 +201,7 @@ use Affinity4\Template\Engine;
 
 $template = new Engine;
 
-$template->addToken('/\{\{ ([\w\d]+) \}\}/', function ($statement) {
+$template->addRule('/\{\{ ([\w\d]+) \}\}/', function ($statement) {
     return '<?php echo $' . $statement[1] . ' ?>'; 
 });
 
