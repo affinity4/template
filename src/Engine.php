@@ -16,6 +16,7 @@ use org\bovigo\vfs\vfsStream;
  * Engine Class
  *
  * @author  Luke Watts <luke@affinity4.ie>
+ *
  * @since   1.0.0
  *
  * @package Affinity4\Template
@@ -24,6 +25,7 @@ class Engine extends Syntax
 {
     /**
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.0
      *
      * @var
@@ -31,6 +33,7 @@ class Engine extends Syntax
     private $stream;
     /**
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.2
      *
      * @var
@@ -38,6 +41,7 @@ class Engine extends Syntax
     private $view_path;
     /**
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.2
      *
      * @var
@@ -45,6 +49,7 @@ class Engine extends Syntax
     private $view_dir;
     /**
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.2
      *
      * @var
@@ -52,6 +57,7 @@ class Engine extends Syntax
     private $layout;
     /**
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.2
      *
      * @var
@@ -64,11 +70,10 @@ class Engine extends Syntax
      * NOTE: Mostly used for unit testing the stream.
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.0
      *
      * @param mixed $stream
-     *
-     * @return void
      */
     public function setStream($stream)
     {
@@ -79,6 +84,7 @@ class Engine extends Syntax
      * Return the stream
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.0
      *
      * @return string
@@ -92,11 +98,10 @@ class Engine extends Syntax
      * Compile template syntax to PHP
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.0
      *
      * @param $stream
-     *
-     * @return void
      */
     public function compile($stream)
     {
@@ -113,11 +118,10 @@ class Engine extends Syntax
      * Set the current view path.
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.2
      *
      * @param string $view_path
-     *
-     * @return void
      */
     public function setViewPath($view_path)
     {
@@ -128,6 +132,7 @@ class Engine extends Syntax
      * Get the current view path
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.2
      *
      * @return string
@@ -141,11 +146,10 @@ class Engine extends Syntax
      * Sets the current view directory
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.2
      *
      * @param string $view_dir
-     *
-     * @return void
      */
     public function setViewDir($view_dir)
     {
@@ -156,6 +160,7 @@ class Engine extends Syntax
      * Get the current view directory
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.2
      *
      * @return string
@@ -169,11 +174,10 @@ class Engine extends Syntax
      * Set the current layout to be used with the current view
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.2
      *
      * @param mixed $layout
-     *
-     * @return void
      */
     public function setLayout($layout)
     {
@@ -184,6 +188,7 @@ class Engine extends Syntax
      * Get the current layout to use with the current view
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.2
      *
      * @return mixed
@@ -197,6 +202,7 @@ class Engine extends Syntax
      * Check if the current view extends a layout
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.2
      *
      * @return bool
@@ -211,11 +217,10 @@ class Engine extends Syntax
      * parent blocks with child blocks where necessary.
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.2
      *
      * @param $file
-     *
-     * @return void
      */
     public function layout($file)
     {
@@ -232,11 +237,10 @@ class Engine extends Syntax
      * Sets the blocks for the current view
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.2
      *
      * @param $file_name
-     *
-     * @return void
      */
     public function setBlocks($file_name, $layout = true)
     {
@@ -270,7 +274,7 @@ class Engine extends Syntax
                 }
             }
 
-            $i++;
+            ++$i;
         }
         fclose($file);
     }
@@ -279,6 +283,7 @@ class Engine extends Syntax
      * Get the array of blocks
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.2
      *
      * @return array
@@ -292,9 +297,8 @@ class Engine extends Syntax
      * Compile blocks into the final output
      *
      * @author Luke Watts <luke@affinity4.ie>
-     * @since  1.0.2
      *
-     * @return void
+     * @since  1.0.2
      */
     public function compileBlocks()
     {
@@ -334,7 +338,7 @@ class Engine extends Syntax
             }
 
             $new_content .= $line;
-            $i++;
+            ++$i;
         }
         fclose($file);
 
@@ -345,16 +349,17 @@ class Engine extends Syntax
      * Render the view with paramaters
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.0.0
      *
      * @param string $view
      * @param array  $params
-     *
-     * @return void
      */
     public function render($view, $params = [])
     {
-        if (!empty($params)) extract($params);
+        if (!empty($params)) {
+            extract($params);
+        }
 
         $viewArray = explode('/', $view);
         $this->setViewPath(implode('/', $viewArray));
@@ -365,7 +370,9 @@ class Engine extends Syntax
         $file = vfsStream::url($view . '.php');
 
         $this->layout($view);
-        if ($this->hasLayout()) $this->compileBlocks();
+        if ($this->hasLayout()) {
+            $this->compileBlocks();
+        }
 
         $this->compile($this->getStream());
 

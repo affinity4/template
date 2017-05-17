@@ -14,6 +14,7 @@ namespace Affinity4\Template;
  * Syntax Class
  *
  * @author  Luke Watts <luke@affinity4.ie>
+ *
  * @since   1.1.0
  *
  * @package Affinity4\Template
@@ -22,6 +23,7 @@ class Syntax
 {
     /**
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.1.0
      *
      * @var
@@ -32,6 +34,7 @@ class Syntax
      * Syntax Constructor
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.1.0
      */
     public function __construct()
@@ -196,6 +199,7 @@ class Syntax
      * Add a token to be applied when compiling
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.1.0
      *
      * @param $pattern
@@ -212,6 +216,7 @@ class Syntax
      * Get array of rules
      *
      * @author Luke Watts <luke@affinity4.ie>
+     *
      * @since  1.1.0
      *
      * @return array

@@ -1,8 +1,7 @@
 <?php
 
 $finder = Symfony\Component\Finder\Finder::create()
-    ->notPath('vendor')
-    ->notPath('tests')
+    ->exclude(['vendor', 'tests'])
     ->in(__DIR__)
     ->name('*.php')
     ->ignoreDotFiles(true)
