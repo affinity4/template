@@ -21,8 +21,17 @@ use org\bovigo\vfs\vfsStream;
  *
  * @package Affinity4\Template
  */
-class Engine extends Syntax
+class Engine
 {
+    /**
+     * @author Luke Watts <luke@affinity4.ie>
+     *
+     * @since  1.2.0
+     *
+     * @var \Affinity4\Template\SyntaxInterface
+     */
+    private $syntax;
+
     /**
      * @author Luke Watts <luke@affinity4.ie>
      *
@@ -31,6 +40,7 @@ class Engine extends Syntax
      * @var
      */
     private $stream;
+
     /**
      * @author Luke Watts <luke@affinity4.ie>
      *
@@ -39,6 +49,7 @@ class Engine extends Syntax
      * @var
      */
     private $view_path;
+
     /**
      * @author Luke Watts <luke@affinity4.ie>
      *
@@ -47,6 +58,7 @@ class Engine extends Syntax
      * @var
      */
     private $view_dir;
+
     /**
      * @author Luke Watts <luke@affinity4.ie>
      *
@@ -55,6 +67,7 @@ class Engine extends Syntax
      * @var
      */
     private $layout;
+
     /**
      * @author Luke Watts <luke@affinity4.ie>
      *
@@ -63,6 +76,11 @@ class Engine extends Syntax
      * @var
      */
     private $blocks = [];
+
+    public function __construct(SyntaxInterface $syntax)
+    {
+        $this->syntax = $syntax;
+    }
 
     /**
      * Set the stream.
@@ -102,16 +120,20 @@ class Engine extends Syntax
      * @since  1.0.0
      *
      * @param $stream
+     *
+     * @return string
      */
     public function compile($stream)
     {
         $this->setStream($stream);
 
-        foreach ($this->getRules() as $rule) {
+        foreach ($this->syntax->getRules() as $rule) {
             $this->stream = ($rule['callback'])
                 ? preg_replace_callback($rule['pattern'], $rule['replacement'], $this->getStream())
                 : preg_replace($rule['pattern'], $rule['replacement'], $this->getStream());
         }
+
+        return $this->getStream();
     }
 
     /**
@@ -227,7 +249,7 @@ class Engine extends Syntax
         $this->setStream(file_get_contents($file));
         $this->setBlocks($file, false); // Add child blocks
 
-        if (preg_match('/<!-- ?@extends (.*) ?-->/', $this->getStream(), $matches)) {
+        if (preg_match($this->syntax->getLayoutRule(), $this->getStream(), $matches)) {
             $this->setLayout($this->getViewDir() . '/' . trim($matches[1]));
             $this->setBlocks($this->getLayout()); // Add Parent blocks
         }
@@ -241,6 +263,9 @@ class Engine extends Syntax
      * @since  1.0.2
      *
      * @param $file_name
+     * @param $layout bool
+     *
+     * @return void
      */
     public function setBlocks($file_name, $layout = true)
     {
@@ -253,23 +278,28 @@ class Engine extends Syntax
         while (!feof($file)) {
             $line = fgets($file);
 
-            if (preg_match('~<!-- ?@block (.*) ?-->(.*)<!-- ?@/block ?-->~', $line, $matches)) {
+            if (preg_match(sprintf(
+                '%1$s%2$s(.*)%3$s%1$s',
+                substr($this->syntax->getBlockRuleByKey('opening_tag'), 0, 1),
+                substr($this->syntax->getBlockRuleByKey('opening_tag'), 1, -1),
+                substr($this->syntax->getBlockRuleByKey('closing_tag'), 1, -1
+                )), $line, $matches)) {
                 $block_name = trim($matches[1]);
                 $this->blocks[$type][$block_name] = $matches[2];
             } else {
-                if (preg_match('/<!-- ?@block (.*) ?-->/', $line, $matches)) {
+                if (preg_match($this->syntax->getBlockRuleByKey('opening_tag'), $line, $matches)) {
                     $in_block = true;
                     $block_name = trim($matches[1]);
                     $this->blocks[$type][$block_name] = '';
                 }
 
                 if ($in_block) {
-                    if (!preg_match('/<!-- ?@block (.*) ?-->/', $line) && !preg_match('~<!-- ?@/block ?-->~', $line)) {
+                    if (!preg_match($this->syntax->getBlockRuleByKey('opening_tag'), $line) && !preg_match($this->syntax->getBlockRuleByKey('closing_tag'), $line)) {
                         $this->blocks[$type][$block_name] .= $line;
                     }
                 }
 
-                if (preg_match('~<!-- ?@/block ?-->~', $line)) {
+                if (preg_match($this->syntax->getBlockRuleByKey('closing_tag'), $line)) {
                     $in_block = false;
                 }
             }
@@ -294,17 +324,17 @@ class Engine extends Syntax
     }
 
     /**
-     * Compile blocks into the final output
+     * Compile layout and blocks into the final output
      *
      * @author Luke Watts <luke@affinity4.ie>
      *
      * @since  1.0.2
+     *
+     * @return string
      */
-    public function compileBlocks()
+    public function compileLayout($current_layout, $current_blocks)
     {
-        $this->setStream(file_get_contents($this->getLayout()));
-
-        $file = fopen($this->getLayout(), 'r+');
+        $file = fopen($current_layout, 'r+');
 
         $in_block = false;
         $block_name = '';
@@ -313,27 +343,32 @@ class Engine extends Syntax
         while (!feof($file)) {
             $line = fgets($file);
 
-            if (preg_match('~<!-- ?@block (.*) ?-->(.*)<!-- ?@/block ?-->~', $line, $matches)) {
+            if (preg_match(sprintf(
+                    '%1$s%2$s(.*)%3$s%1$s',
+                    substr($this->syntax->getBlockRuleByKey('opening_tag'), 0, 1),
+                    substr($this->syntax->getBlockRuleByKey('opening_tag'), 1, -1),
+                    substr($this->syntax->getBlockRuleByKey('closing_tag'), 1, -1)
+                ), $line, $matches)) {
                 $block_name = trim($matches[1]);
-                $line = (array_key_exists($block_name, $this->getBlocks()['slave'])) ? $this->getBlocks()['slave'][$block_name] : $this->getBlocks()['master'][$block_name];
+                $line = (array_key_exists($block_name, $current_blocks['slave'])) ? $current_blocks['slave'][$block_name] : $current_blocks['master'][$block_name];
             } else {
-                if (preg_match('/<!-- ?@block (.*) ?-->/', $line, $matches)) {
+                if (preg_match($this->syntax->getBlockRuleByKey('opening_tag'), $line, $matches)) {
                     $in_block = true;
                     $block_name = trim($matches[1]);
                     $line = '';
                 }
 
                 if ($in_block) {
-                    if (!preg_match('/<!-- ?@block (.*) ?-->/', $line) && !preg_match('~<!-- ?@/block ?-->~', $line)) {
-                        if (array_key_exists($block_name, $this->getBlocks()['slave'])) {
+                    if (!preg_match($this->syntax->getBlockRuleByKey('opening_tag'), $line) && !preg_match($this->syntax->getBlockRuleByKey('closing_tag'), $line)) {
+                        if (array_key_exists($block_name, $current_blocks['slave'])) {
                             $line = '';
                         }
                     }
                 }
 
-                if (preg_match('~<!-- ?@/block ?-->~', $line)) {
+                if (preg_match($this->syntax->getBlockRuleByKey('closing_tag'), $line)) {
                     $in_block = false;
-                    $line = (array_key_exists($block_name, $this->getBlocks()['slave'])) ? $this->getBlocks()['slave'][$block_name] : $this->getBlocks()['master'][$block_name];
+                    $line = (array_key_exists($block_name, $current_blocks['slave'])) ? $current_blocks['slave'][$block_name] : $current_blocks['master'][$block_name];
                 }
             }
 
@@ -342,11 +377,11 @@ class Engine extends Syntax
         }
         fclose($file);
 
-        $this->setStream($new_content);
+        return $new_content;
     }
 
     /**
-     * Render the view with paramaters
+     * Render the view with parameters
      *
      * @author Luke Watts <luke@affinity4.ie>
      *
@@ -371,12 +406,10 @@ class Engine extends Syntax
 
         $this->layout($view);
         if ($this->hasLayout()) {
-            $this->compileBlocks();
+            $this->setStream($this->compileLayout($this->getLayout(), $this->getBlocks()));
         }
 
-        $this->compile($this->getStream());
-
-        file_put_contents($file, $this->getStream());
+        file_put_contents($file, $this->compile($this->getStream()));
 
         ob_start();
         include $file;

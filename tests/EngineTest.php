@@ -10,6 +10,7 @@
  */
 namespace Affinity4\Template\Tests;
 
+use Affinity4\Template\Syntax;
 use org\bovigo\vfs\vfsStream;
 use Affinity4\Template\Engine;
 use PHPUnit\Framework\TestCase;
@@ -18,42 +19,27 @@ class EngineTest extends TestCase
 {
     private $vfs;
     private $template;
-    
+
     public function setUp()
     {
         $this->vfs = vfsStream::setup('tests');
-        $this->template = new Engine;
+        $this->template = new Engine(new Syntax);
     }
-    
-    public function testAddRuleAndGetRules()
-    {
-        $expected = $this->template->getRules();
-        $expected[] = [
-            'pattern' => '/<!-- {{ var }} -->/',
-            'replacement' => '<?= $var ?>',
-            'callback' => false
-        ];
-        
-        $n = count($expected) - 1;
-        $this->template->addRule($expected[$n]['pattern'], $expected[$n]['replacement'], $expected[$n]['callback']);
-        
-        $this->assertArraySubset($expected, $this->template->getRules());
-    }
-    
+
     public function testSetStreamAndGetStream()
     {
         $this->template->setStream('Test');
         $this->assertEquals('Test', $this->template->getStream());
     }
-    
+
     public function testCompile()
     {
         $this->template->setStream('<!-- :test -->');
         $this->template->compile($this->template->getStream());
-        
+
         $this->assertEquals('<?= $test ?>', $this->template->getStream());
     }
-    
+
     public function testRenderVariables()
     {
         $expected = <<<VAR
@@ -76,7 +62,7 @@ VAR;
         $output = ob_get_clean();
         $this->assertEquals($expected, $output);
     }
-    
+
     public function testRenderIfStatements()
     {
         $expected = <<<EXPECTED
@@ -87,7 +73,7 @@ Else show if :var_with_underscores is not 'var_not_with_underscores'
 Elseif show when :var_with_underscores is 'var_with_underscores'
 
 EXPECTED;
-        
+
         ob_start();
         $this->template->render(
             'tests/views/if-statements.php',
@@ -101,7 +87,7 @@ EXPECTED;
         $output = ob_get_clean();
         $this->assertEquals($expected, $output);
     }
-    
+
     public function testRenderEachLoop()
     {
         $expected = <<<EXPECTED
@@ -111,7 +97,7 @@ EXPECTED;
 <li>three</li>
 </ul>
 EXPECTED;
-        
+
         ob_start();
         $this->template->render(
             'tests/views/each-loop.php',
@@ -122,7 +108,7 @@ EXPECTED;
         $output = ob_get_clean();
         $this->assertEquals($expected, $output);
     }
-    
+
     public function testRenderForeachLoop()
     {
         $expected = <<<EXPECTED
@@ -132,7 +118,7 @@ EXPECTED;
 <li>three</li>
 </ul>
 EXPECTED;
-        
+
         ob_start();
         $this->template->render(
             'tests/views/foreach-loop.php',
@@ -143,7 +129,7 @@ EXPECTED;
         $output = ob_get_clean();
         $this->assertEquals($expected, $output);
     }
-    
+
     public function testRenderForeachLoopWithKeysAndValues()
     {
         $expected = <<<EXPECTED
@@ -153,14 +139,14 @@ EXPECTED;
 </article>
 
 EXPECTED;
-        
+
         ob_start();
         $this->template->render(
             'tests/views/foreach-loop-with-keys-and-values.php',
             [
                 'posts' => [
                     [
-                        'title' => 'Post title goes here...',
+                        'title'   => 'Post title goes here...',
                         'content' => 'Content goes here...'
                     ]
                 ]
@@ -169,7 +155,7 @@ EXPECTED;
         $output = ob_get_clean();
         $this->assertEquals($expected, $output);
     }
-    
+
     public function testRenderForLoop()
     {
         $expected = <<<EXPECTED
@@ -187,7 +173,7 @@ EXPECTED;
         $output = ob_get_clean();
         $this->assertEquals($expected, $output);
     }
-    
+
     public function testRenderWhileLoop()
     {
         $expected = <<<EXPECTED
@@ -197,7 +183,7 @@ EXPECTED;
 <li>3</li>
 </ul>
 EXPECTED;
-        
+
         ob_start();
         $this->template->render(
             'tests/views/while-loop.php'
@@ -205,25 +191,25 @@ EXPECTED;
         $output = ob_get_clean();
         $this->assertEquals($expected, $output);
     }
-    
+
     public function testSetViewPathAndGetViewPath()
     {
         ob_start();
         $this->template->render('tests/views/extends.php');
         $output = ob_get_clean();
-    
+
         $this->assertEquals('tests/views/extends.php', $this->template->getViewPath());
     }
-    
+
     public function testSetLayoutAndGetLayout()
     {
         ob_start();
         $this->template->render('tests/views/extends.php');
         $output = ob_get_clean();
-        
+
         $this->assertEquals('tests/views/layout/master.php', $this->template->getLayout());
     }
-    
+
     public function testAddBlocks()
     {
         $expected = [
@@ -235,22 +221,22 @@ EXPECTED;
                 'sidebar' => 'Sidebar'
             ]
         ];
-        
+
         ob_start();
         $this->template->render('tests/views/extends.php');
         $output = ob_get_clean();
-    
+
         $this->assertEquals($expected, $this->template->getBlocks());
     }
-    
+
     public function testCompileBlocks()
     {
         $expected = sprintf('Content%1$sShould override Master layout content%1$s%1$sNot in block%1$s%1$sSidebar', PHP_EOL);
-    
+
         ob_start();
         $this->template->render('tests/views/extends.php');
         $output = ob_get_clean();
-    
+
         $this->assertEquals($expected, $output);
     }
 }

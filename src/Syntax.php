@@ -19,17 +19,8 @@ namespace Affinity4\Template;
  *
  * @package Affinity4\Template
  */
-class Syntax
+class Syntax extends Tokenizer implements SyntaxInterface
 {
-    /**
-     * @author Luke Watts <luke@affinity4.ie>
-     *
-     * @since  1.1.0
-     *
-     * @var
-     */
-    protected $rules;
-
     /**
      * Syntax Constructor
      *
@@ -187,42 +178,8 @@ class Syntax
          */
         $this->addRule('/<!-- ?@end(if|foreach|for|while) ?-->/', '<?php end$1 ?>');
 
-        /*
-         * Syntax: <!-- @endblock -->||<!-- @/block -->
-         * PHP: ''
-         */
-        $this->addRule('/<!-- ?@endblock ?-->/', '');
-        $this->addRule('~<!-- ?@/block ?-->~', '');
-    }
+        $this->setLayoutRule('/<!-- ?@extends (.*) ?-->/');
 
-    /**
-     * Add a token to be applied when compiling
-     *
-     * @author Luke Watts <luke@affinity4.ie>
-     *
-     * @since  1.1.0
-     *
-     * @param $pattern
-     * @param $replacement
-     */
-    public function addRule($pattern, $replacement)
-    {
-        $this->rules[] = (is_callable($replacement))
-            ? ['pattern' => $pattern, 'replacement' => $replacement, 'callback' => true]
-            : ['pattern' => $pattern, 'replacement' => $replacement, 'callback' => false];
-    }
-
-    /**
-     * Get array of rules
-     *
-     * @author Luke Watts <luke@affinity4.ie>
-     *
-     * @since  1.1.0
-     *
-     * @return array
-     */
-    public function getRules()
-    {
-        return (array) $this->rules;
+        $this->setBlockRule('~<!-- ?@block (.*) ?-->~', '~<!-- ?(@/block|@endblock) ?-->~');
     }
 }
