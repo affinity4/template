@@ -10,20 +10,22 @@
  */
 namespace Affinity4\Template\Tests;
 
-use Affinity4\Template\Syntax;
+use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
 use Affinity4\Template\Engine;
-use PHPUnit\Framework\TestCase;
+use Affinity4\Template\Syntax\Affinity;
 
 class EngineTest extends TestCase
 {
     private $vfs;
     private $template;
+    private $view_path;
 
     public function setUp()
     {
         $this->vfs = vfsStream::setup('tests');
-        $this->template = new Engine(new Syntax);
+        $this->template = new Engine(new Affinity());
+        $this->view_path = 'tests/views/affinity';
     }
 
     public function testSetStreamAndGetStream()
@@ -51,7 +53,7 @@ VAR;
 
         ob_start();
         $this->template->render(
-            'tests/views/echo-variables.php',
+            $this->view_path . '/echo-variables.php',
             [
                 'var'                   => 'var',
                 'var_with_underscores'  => 'var_with_underscores',
@@ -76,7 +78,7 @@ EXPECTED;
 
         ob_start();
         $this->template->render(
-            'tests/views/if-statements.php',
+            $this->view_path . '/if-statements.php',
             [
                 'var'                  => 'var',
                 'var_with_underscores' => 'var_with_underscores',
@@ -100,7 +102,7 @@ EXPECTED;
 
         ob_start();
         $this->template->render(
-            'tests/views/each-loop.php',
+            $this->view_path . '/each-loop.php',
             [
                 'items' => ['one', 'two', 'three']
             ]
@@ -121,7 +123,7 @@ EXPECTED;
 
         ob_start();
         $this->template->render(
-            'tests/views/foreach-loop.php',
+            $this->view_path . '/foreach-loop.php',
             [
                 'items' => ['one', 'two', 'three']
             ]
@@ -142,7 +144,7 @@ EXPECTED;
 
         ob_start();
         $this->template->render(
-            'tests/views/foreach-loop-with-keys-and-values.php',
+            $this->view_path . '/foreach-loop-with-keys-and-values.php',
             [
                 'posts' => [
                     [
@@ -168,7 +170,7 @@ EXPECTED;
         
         ob_start();
         $this->template->render(
-            'tests/views/for-loop.php'
+            $this->view_path . '/for-loop.php'
         );
         $output = ob_get_clean();
         $this->assertEquals($expected, $output);
@@ -186,7 +188,7 @@ EXPECTED;
 
         ob_start();
         $this->template->render(
-            'tests/views/while-loop.php'
+            $this->view_path . '/while-loop.php'
         );
         $output = ob_get_clean();
         $this->assertEquals($expected, $output);
@@ -195,19 +197,19 @@ EXPECTED;
     public function testSetViewPathAndGetViewPath()
     {
         ob_start();
-        $this->template->render('tests/views/extends.php');
+        $this->template->render($this->view_path . '/extends.php');
         $output = ob_get_clean();
 
-        $this->assertEquals('tests/views/extends.php', $this->template->getViewPath());
+        $this->assertEquals($this->view_path . '/extends.php', $this->template->getViewPath());
     }
 
     public function testSetLayoutAndGetLayout()
     {
         ob_start();
-        $this->template->render('tests/views/extends.php');
+        $this->template->render($this->view_path . '/extends.php');
         $output = ob_get_clean();
 
-        $this->assertEquals('tests/views/layout/master.php', $this->template->getLayout());
+        $this->assertEquals($this->view_path . '/layout/master.php', $this->template->getLayout());
     }
 
     public function testAddBlocks()
@@ -223,7 +225,7 @@ EXPECTED;
         ];
 
         ob_start();
-        $this->template->render('tests/views/extends.php');
+        $this->template->render($this->view_path . '/extends.php');
         $output = ob_get_clean();
 
         $this->assertEquals($expected, $this->template->getBlocks());
@@ -234,7 +236,7 @@ EXPECTED;
         $expected = sprintf('Content%1$sShould override Master layout content%1$s%1$sNot in block%1$s%1$sSidebar', PHP_EOL);
 
         ob_start();
-        $this->template->render('tests/views/extends.php');
+        $this->template->render($this->view_path . '/extends.php');
         $output = ob_get_clean();
 
         $this->assertEquals($expected, $output);

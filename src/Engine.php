@@ -247,11 +247,21 @@ class Engine
     public function layout($file)
     {
         $this->setStream(file_get_contents($file));
-        $this->setBlocks($file, false); // Add child blocks
+
+        try {
+            $this->setBlocks($file, false); // Add child blocks
+        } catch (FileNotFoundException $e) {
+            echo $e->getMessage();
+        }
 
         if (preg_match($this->syntax->getLayoutRule(), $this->getStream(), $matches)) {
             $this->setLayout($this->getViewDir() . '/' . trim($matches[1]));
-            $this->setBlocks($this->getLayout()); // Add Parent blocks
+
+            try {
+                $this->setBlocks($this->getLayout()); // Add Parent blocks
+            } catch (FileNotFoundException $e) {
+                echo $e->getMessage();
+            }
         }
     }
 
@@ -270,6 +280,10 @@ class Engine
     public function setBlocks($file_name, $layout = true)
     {
         $file = fopen($file_name, 'r');
+
+        if (!$file) {
+            throw new FileNotFoundException('File ' . $file_name . ' could not be found.');
+        }
 
         $in_block = false;
         $type = ($layout) ? 'master' : 'slave';
