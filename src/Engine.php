@@ -11,6 +11,8 @@
 namespace Affinity4\Template;
 
 use org\bovigo\vfs\vfsStream;
+use Affinity4\Template\Syntax\SyntaxInterface;
+use Affinity4\Template\Exception\TemplateNotFoundException;
 
 /**
  * Engine Class
@@ -28,7 +30,7 @@ class Engine
      *
      * @since  1.2.0
      *
-     * @var \Affinity4\Template\SyntaxInterface
+     * @var \Affinity4\Template\Syntax\SyntaxInterface
      */
     private $syntax;
 
@@ -246,11 +248,15 @@ class Engine
      */
     public function layout($file)
     {
+        if (!file_exists($file)) {
+            throw new TemplateNotFoundException('The layout file ' . $file . ' could not be found ');
+        }
+
         $this->setStream(file_get_contents($file));
 
         try {
             $this->setBlocks($file, false); // Add child blocks
-        } catch (FileNotFoundException $e) {
+        } catch (TemplateNotFoundException $e) {
             echo $e->getMessage();
         }
 
@@ -259,7 +265,7 @@ class Engine
 
             try {
                 $this->setBlocks($this->getLayout()); // Add Parent blocks
-            } catch (FileNotFoundException $e) {
+            } catch (TemplateNotFoundException $e) {
                 echo $e->getMessage();
             }
         }
@@ -282,7 +288,7 @@ class Engine
         $file = fopen($file_name, 'r');
 
         if (!$file) {
-            throw new FileNotFoundException('File ' . $file_name . ' could not be found.');
+            throw new TemplateNotFoundException('File ' . $file_name . ' could not be found.');
         }
 
         $in_block = false;
@@ -348,6 +354,10 @@ class Engine
      */
     public function compileLayout($current_layout, $current_blocks)
     {
+        if (!file_exists($current_layout)) {
+            throw new TemplateNotFoundException('The layout file ' . $current_layout . ' could not be found ');
+        }
+
         $file = fopen($current_layout, 'r+');
 
         $in_block = false;

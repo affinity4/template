@@ -10,7 +10,7 @@ namespace Affinity4\Template\Exception;
  * 
  * @since 1.3.0
  */
-class FileNotFoundException extends \Exception
+class TemplateNotFoundException extends \Exception
 {
     /**
      * --------------------------------------------------

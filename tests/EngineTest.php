@@ -241,4 +241,14 @@ EXPECTED;
 
         $this->assertEquals($expected, $output);
     }
+
+    /**
+     * @return void
+     */
+    public function testThrowsTemplateNotFoundException()
+    {
+        $this->expectException(\Affinity4\Template\Exception\TemplateNotFoundException::class);
+
+        $this->template->render('file-that-doesnt-exist.php');
+    }
 }
