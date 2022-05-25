@@ -17,7 +17,7 @@ class TokenizerTest extends TestCase
 {
     private $tokenizer;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->tokenizer = new Tokenizer;
     }

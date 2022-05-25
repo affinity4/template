@@ -21,7 +21,7 @@ class EngineTest extends TestCase
     private $template;
     private $view_path;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->vfs = vfsStream::setup('tests');
         $this->template = new Engine(new Affinity());
