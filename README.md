@@ -118,7 +118,7 @@ File: `views/layout/master.php`
     <!-- Each view can add custom CSS here -->
     <!-- @/block -->
     
-    <script src="/assets/js/jquery.js">
+    <script src="/assets/js/jquery.js"></script>
     <!-- @block js-head -->
     <!-- Each view can add custom JS here -->
     <!-- @/block -->
