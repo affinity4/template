@@ -8,13 +8,16 @@ Full-featured template engine with optional syntax which is easy to learn. Can u
  - Add new syntax if needed.
 
 ## Installation
+
 Affinity4/Template is available via composer:
 
-`composer require affinity4/template`
+```bash
+composer require affinity4/template
+```
 
 or
 
-```
+```json
 {
     "require": {
         "affinity4/template": "^1.1"
@@ -25,25 +28,25 @@ or
 ## Syntax
 Output a variables:
 
-```
+```html
 <h1><!-- :title --></h1>
 ```
 
 Set a variable:
 
-```
+```html
 <!-- :showTitle = true -->
 ```
 
 To get an array item by key, such as `$post['title']`:
 
-```
+```html
 <!-- :post.title -->
 ```
 
 If statement:
 
-```
+```html
 <!-- @if :showTitle is true and :something is false or :somethingElse -->
     <h1><!-- :title --></h1>
 <!-- @/if -->
@@ -60,7 +63,7 @@ If statement:
 
 Foreach loop:
 
-```
+```html
 <ul>
 <!-- @each :item in :items -->
     <li><!-- :item --></li>
@@ -79,7 +82,7 @@ __NOTE:__ Can be `@foreach` also.
 
 While loop:
 
-```
+```html
 <!-- :i = 1 -->
 <!-- @while :i <= count(:items) -->
     Number: <!-- :i --><br />
@@ -90,7 +93,7 @@ While loop:
 
 For loop:
 
-```
+```html
 <!-- @for :i = 1; :i <= 3; :i++ -->
     Number: <!-- :i --><br />
 <!-- @/for -->
@@ -104,7 +107,7 @@ Create a master layout with sections to be overridden in each view file:
 
 File: `views/layout/master.php`
 
-```
+```html
 <!DOCKTYPE html>
 <html>
 <head>
@@ -140,7 +143,7 @@ Then in you view:
 
 File: `views/home.php`
 
-```
+```html
 <!-- @extends layout/master.php -->
 
 <!-- @block title --><!-- :page_title --><!-- @/block -->
@@ -160,7 +163,7 @@ Then simply render the view:
 
 File: `index.php`
 
-```
+```php
 use Affinity4\Template;
 
 $template = new Template\Engine(new Template\Syntax);
@@ -171,7 +174,7 @@ $tempalte->render('views/home.php', ['page_title' => 'Home']);
 ## Usage
 To render a template:
 
-```
+```php
 use Affinity4\Template;
 
 $template = new Template\Engine(new Template\Syntax);
@@ -181,7 +184,7 @@ $template->render('views/home.php', ['title' => 'Home Page']);
 
 If you want to add new syntax you can use the `addToken` method after initializing the template engine.
 
-``` 
+```php
 use Affinity4\Template;
 
 $template = new Template\Engine(new Template\Syntax);
@@ -193,7 +196,7 @@ $template->render('views/home.php', ['title' => 'Home Page']);
 
 You can also pass a callable as the second argument to the `addToken` method to use `preg_replace_callback` instead for the replacement.
 
-``` 
+```php
 use Affinity4\Template;
 
 $template = new Template\Engine(new Template\Syntax);
@@ -213,7 +216,7 @@ It easy to add all the features currently in Affinity4 Template by simply extend
  
 Here is an example of creating a Blade style syntax of your own
 
-```
+```php
 <?php
 namespace Your\Template\Syntax\Blade2;
 
@@ -244,7 +247,7 @@ class Blade2 extends Affinity4\Template\Tokenizer implements Affinity4\Template\
 
 You then simply use dependency injection when calling the Template Engine class
 
-```
+```php
 require_once __DIR__ . '/vendor/autoload.php';
  
 use Affinity4\Template\Engine;
@@ -256,7 +259,7 @@ $blade2->render('views/home.blade', ['title' => 'Blade 2']);
 
 The your layout template (views/layout/master.blade) can be:
 
-```
+```html
 <!doctype html>
 <html>
 <head>
@@ -273,7 +276,8 @@ The your layout template (views/layout/master.blade) can be:
 ```
 
 In views/home.blade...
-```
+
+```html
 @extends('layouts/master.blade')
 
 @section('title')
@@ -285,7 +289,7 @@ In views/home.blade...
 
 Run tests:
 
-```
+```bash
 vendor/bin/phpunit
 ```
 
