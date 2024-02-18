@@ -1,10 +1,5 @@
 # Template
 
-[![Build Status](https://travis-ci.org/affinity4/template.svg?branch=master)](https://travis-ci.org/affinity4/template)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/affinity4/template/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/affinity4/template/?branch=master)
-
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/089c34a2-1ffd-4b0c-a327-ec192d8f9a06/big.png)](https://insight.sensiolabs.com/projects/089c34a2-1ffd-4b0c-a327-ec192d8f9a06)
-
 Full-featured template engine with optional syntax which is easy to learn. Can use plain PHP also.
 
 ## Features
